@@ -1,0 +1,4 @@
+[      3.665]  - Log - Initialize Complete: Start time: 0 	 End Time: 3
+[      3.904]  - Main - Hello World, from Chip 100
+[      8.666]  - Main - Log after sleeping for 1 msecs
+[      8.773]  - Log - Log Closing.
