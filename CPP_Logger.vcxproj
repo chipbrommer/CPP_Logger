@@ -127,7 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CPP_Logger.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="timer.cpp" />
   </ItemGroup>
