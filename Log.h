@@ -2,8 +2,8 @@
 //!
 //! @file		Log.h
 //! 
-//! @brief	A singleton class to handle asyncronous logging to a file of 
-//!				  various levels of importance. 
+//! @brief		A singleton class to handle asyncronous logging to a file of 
+//!				various levels of importance. 
 //! 
 //! @author		Chip Brommer
 //! 
