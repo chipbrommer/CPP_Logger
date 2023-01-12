@@ -1,2 +1,2 @@
 # CPP_Logger
-A multilevel threaded singleton CPP logger.
+A multilevel threaded singleton logging class
