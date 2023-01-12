@@ -250,7 +250,7 @@ bool Log::LogToFile(bool enable)
 Log::~Log()
 {
 	// Notify close and wait for thread to finish writing to file
-	AddEntry(LOG_INFO, mUser, "Log Closing.");
+	AddEntry(LOG_INFO, mUser, "Closing.");
 	while (!mQueue.empty()) {}
 
 	mRunning = false;
