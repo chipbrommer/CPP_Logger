@@ -43,8 +43,14 @@ void Log::ReleaseInstance()
 	}
 }
 
-void Log::Initialize(std::string filename, bool enableConsoleLogging, bool enableFileLogging)
+int Log::Initialize(std::string filename, bool enableConsoleLogging, bool enableFileLogging)
 {
+	// Catch if already initialized. 
+	if (mRunning)
+	{
+		return 0;
+	}
+
 	uint32_t initStart = TIMER_GetMsecTicks();
 
 	this->mUser = "Log";
@@ -56,7 +62,7 @@ void Log::Initialize(std::string filename, bool enableConsoleLogging, bool enabl
 	if (i == std::string::npos)
 	{
 		std::cout << "log path is not a valid path.\n";
-		return;
+		return -1;
 	}
 	std::string directoryPath = filename.substr(0, i);
 
@@ -108,6 +114,7 @@ void Log::Initialize(std::string filename, bool enableConsoleLogging, bool enabl
 	// Successful initialization
 	mRunning = true;
 	AddEntry(LOG_INFO, mUser, "Initialize Complete: Start time: %d \t End Time: %d", initStart, TIMER_GetMsecTicks());
+	return 1;
 }
 
 bool Log::AddEntry(int level, std::string user, std::string format, ...)

@@ -70,7 +70,6 @@ public:
 	//! @brief Get current instance or creates a new one. 
 	static Log* GetInstance();
 
-
 	//! @brief Release the instance
 	static void ReleaseInstance();
 
@@ -78,7 +77,8 @@ public:
 	//! @param filename - File name and path to place the output file
 	//! @param enableConsoleLogging - true by default, enables or disables console logging. 
 	//! @param enableFileLogging - true by default, enables or disables file logging.
-	void	Initialize(std::string filename, bool enableConsoleLogging = true, bool enableFileLogging = true);
+	//! @return -1 on fail, 0 if already initialized, 1 if successful
+	int	Initialize(std::string filename, bool enableConsoleLogging = true, bool enableFileLogging = true);
 
 	//! @brief Adds a message into the queue to be logged
 	//! @param level - LOG level of the string.

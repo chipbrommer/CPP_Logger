@@ -8,7 +8,13 @@ int main()
 {
     std::string mUser = "Main";
     Log* log = log->GetInstance();
-    log->Initialize("./OutputFiles/output");
+
+    int init = log->Initialize("./OutputFiles/output");
+
+    if (init < 1)
+    {
+        printf_s("Hmmm... init = %d", init);
+    }
     log->SetLogLevel(LOG_INFO);
     log->SetLogTimestampLevel(LOG_TS_USEC);
     log->LogToFile(true);
@@ -18,6 +24,14 @@ int main()
     TIMER_MsecSleep(1);
 
     log->AddEntry(LOG_INFO, mUser, "Log after sleeping for %d msecs", 1);
+
+    log->AddEntry(LOG_INFO, mUser, "Repeat init test...");
+    init = log->Initialize("./OutputFiles/output");
+
+    if (init < 1)
+    {
+        printf_s("Hmmm... init = %d\n", init);
+    }
 
     log->ReleaseInstance();
 }
