@@ -97,7 +97,7 @@ public:
 	//! @param enableConsoleLogging - true by default, enables or disables console logging. 
 	//! @param enableFileLogging - true by default, enables or disables file logging.
 	//! @return -1 on fail, 0 if already initialized, 1 if successful
-	int	Initialize(std::string filename, bool enableConsoleLogging = true, bool enableFileLogging = true);
+	int		Initialize(std::string filename, bool enableConsoleLogging = true, bool enableFileLogging = true);
 
 	//! @brief Adds a message into the queue to be logged
 	//! @param level - LOG Level of the string.
