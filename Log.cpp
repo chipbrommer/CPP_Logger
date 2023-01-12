@@ -51,7 +51,12 @@ int Log::Initialize(std::string filename, bool enableConsoleLogging, bool enable
 		return 0;
 	}
 
-	uint32_t initStart = TIMER_GetMsecTicks();
+#ifdef NO_TIMER
+	uint32_t initStart = 0;
+#else
+	Timer* timer = Timer::GetInstance();
+	uint32_t initStart = timer->GetMSecTicks();
+#endif
 
 	this->mUser = "Log";
 	this->mOutputFile = filename;
@@ -113,7 +118,13 @@ int Log::Initialize(std::string filename, bool enableConsoleLogging, bool enable
 
 	// Successful initialization
 	mRunning = true;
-	AddEntry(LOG_INFO, mUser, "Initialize Complete: Start time: %d \t End Time: %d", initStart, TIMER_GetMsecTicks());
+
+#ifdef NO_TIMER
+	AddEntry(LOG_INFO, mUser, "Initialize Complete");
+#else
+	AddEntry(LOG_INFO, mUser, "Initialize Complete: Start time: %d \t End Time: %d", initStart, timer->GetMSecTicks());
+#endif
+
 	return 1;
 }
 
@@ -132,22 +143,21 @@ bool Log::AddEntry(int level, std::string user, std::string format, ...)
 	// Format the message timestamp
 	switch (mTimestampLevel)
 	{
+#ifdef CPP_TIMER
 		case LOG_TS_MSEC:
 		{
-			// TODO - fix new timer class
-			//snprintf(ts, sizeof(ts), "[%7u] ", (unsigned int)dTimer.GetMSecTicks());
-			snprintf(ts, sizeof(ts), "[%7u] ", (unsigned int)TIMER_GetMsecTicks());
+			Timer* timer = Timer::GetInstance();
+			snprintf(ts, sizeof(ts), "[%7u] ", (unsigned int)timer->GetMSecTicks());
 			break;
 		}
 		case LOG_TS_USEC:
 		{
-			uint32_t t;
-			// TODO - fix new timer class
-			//t = dTimer.GetUSecTicks();
-			t = TIMER_GetUsecTicks();
+			Timer* timer = Timer::GetInstance();
+			uint32_t t = timer->GetUSecTicks();
 			snprintf(ts, sizeof(ts), "[%7u.%03u] ", t / 1000, t % 1000);
 			break;
 		}
+#endif
 		default:
 		{
 	#ifdef _WIN32
@@ -217,9 +227,18 @@ void Log::WriteOut()
 			entry.clear();
 		}
 
-		// TODO - fix new timer class
-		//dTimer.MSecSleep(1);
-		TIMER_MsecSleep(1);
+#ifdef NO_TIMER
+
+#ifdef _WIN32
+		Sleep(1);
+#else
+		usleep(1000);
+#endif
+
+#else
+	Timer* timer = Timer::GetInstance();
+	timer->MSecSleep(1);
+#endif
 	}
 }
 

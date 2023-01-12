@@ -2,8 +2,8 @@
 //!
 //! @file		Log.h
 //! 
-//! @brief	A singleton class to handle asyncronous logging to a file of 
-//!				  various levels of importance. 
+//! @brief		A singleton class to handle asyncronous logging to a file of 
+//!				various levels of importance. 
 //! 
 //! @author		Chip Brommer
 //! 
@@ -36,9 +36,20 @@
 #include	<stdarg.h>					// Inbound Arguments
 #include	<debugapi.h>				// Debug Message
 //
-//#include	"../Timer/Timer.h"			// Timer
-#include	"timer.h"					// Old non-class timer
+#include	"CPP_Timer/Timer.h"
 #include	"LogInfo.h"					// Program Info
+//
+// 
+//	Defines:
+//          name                        reason defined
+//          --------------------        ---------------------------------------
+#ifndef     CPP_LOGGER					// Define the cpp logger class. 
+#define     CPP_LOGGER
+#endif
+//
+#ifndef		CPP_TIMER					// If CPP_Timer not included, dont use timer
+#define		NO_TIMER
+#endif
 //
 ///////////////////////////////////////////////////////////////////////////////
 
