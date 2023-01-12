@@ -61,7 +61,7 @@ int Log::Initialize(std::string filename, bool enableConsoleLogging, bool enable
 	size_t i = filename.rfind('/', filename.length());
 	if (i == std::string::npos)
 	{
-		std::cout << "log path is not a valid path.\n";
+		printf_s("log path is not a valid path.\n");
 		return -1;
 	}
 	std::string directoryPath = filename.substr(0, i);
@@ -80,7 +80,7 @@ int Log::Initialize(std::string filename, bool enableConsoleLogging, bool enable
 		{
 			char buffer[256];
 			strerror_s(buffer, sizeof(buffer), errno); // get string message from errno, XSI-compliant version
-			printf("Error %s", buffer);
+			printf_s("Error %s\n", buffer);
 		}
 	}
 
@@ -104,7 +104,7 @@ int Log::Initialize(std::string filename, bool enableConsoleLogging, bool enable
 	mFile.open(filename + "_" + std::string(time_str) + "." + milliseconds + ".txt");
 	if (!mFile.is_open())
 	{
-		std::cout << "Error creating log file [" << filename << "].\n";
+		printf_s("Error creating log file [%s].\n", filename.c_str());
 	}
 	else
 	{
