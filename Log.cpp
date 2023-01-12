@@ -51,7 +51,14 @@ int Log::Initialize(std::string filename, bool enableConsoleLogging, bool enable
 		return 0;
 	}
 
+#ifdef NO_TIMER
+	uint32_t initStart = 0;
+#elif defined CPP_TIMER
+	Timer* timer = Timer::GetInstance();
+	uint32_t initStart = timer->GetMSecTicks();
+#elif defined OLD_TIMER
 	uint32_t initStart = TIMER_GetMsecTicks();
+#endif
 
 	this->mUser = "Log";
 	this->mOutputFile = filename;
@@ -113,7 +120,15 @@ int Log::Initialize(std::string filename, bool enableConsoleLogging, bool enable
 
 	// Successful initialization
 	mRunning = true;
-	AddEntry(LOG_INFO, mUser, "Initialize Complete: Start time: %d \t End Time: %d", initStart, TIMER_GetMsecTicks());
+
+#ifdef NO_TIMER
+	AddEntry(LOG_INFO, mUser, "Initialize Complete - Using NO_TIMER");
+#elif defined CPP_TIMER
+	AddEntry(LOG_INFO, mUser, "Initialize Complete - Using CPP_TIMER: Start time: %d \t End Time: %d", initStart, timer->GetMSecTicks());
+#elif defined OLD_TIMER
+	AddEntry(LOG_INFO, mUser, "Initialize Complete - Using OLD_TIMER: Start time: %d \t End Time: %d", initStart, TIMER_GetMsecTicks());
+#endif
+
 	return 1;
 }
 
@@ -132,22 +147,30 @@ bool Log::AddEntry(int level, std::string user, std::string format, ...)
 	// Format the message timestamp
 	switch (mTimestampLevel)
 	{
+#if !defined NO_TIMER
 		case LOG_TS_MSEC:
 		{
-			// TODO - fix new timer class
-			//snprintf(ts, sizeof(ts), "[%7u] ", (unsigned int)dTimer.GetMSecTicks());
+		#if defined CPP_TIMER
+			Timer* timer = Timer::GetInstance();
+			snprintf(ts, sizeof(ts), "[%7u] ", (unsigned int)timer->GetMSecTicks());
+		#elif defined OLD_TIMER
 			snprintf(ts, sizeof(ts), "[%7u] ", (unsigned int)TIMER_GetMsecTicks());
+		#endif
 			break;
 		}
 		case LOG_TS_USEC:
 		{
-			uint32_t t;
-			// TODO - fix new timer class
-			//t = dTimer.GetUSecTicks();
-			t = TIMER_GetUsecTicks();
+		#if defined CPP_TIMER
+			Timer* timer = Timer::GetInstance();
+			uint32_t t = timer->GetUSecTicks();
 			snprintf(ts, sizeof(ts), "[%7u.%03u] ", t / 1000, t % 1000);
+		#elif defined OLD_TIMER
+			uint32_t t = TIMER_GetUsecTicks();
+			snprintf(ts, sizeof(ts), "[%7u.%03u] ", t / 1000, t % 1000);
+		#endif
 			break;
 		}
+#endif
 		default:
 		{
 	#ifdef _WIN32
@@ -217,9 +240,18 @@ void Log::WriteOut()
 			entry.clear();
 		}
 
-		// TODO - fix new timer class
-		//dTimer.MSecSleep(1);
+#if defined NO_TIMER
+	#ifdef _WIN32
+		Sleep(1);
+	#else
+		usleep(1000);
+	#endif
+#elif defined CPP_TIMER
+		Timer* timer = Timer::GetInstance();
+		timer->MSecSleep(1);
+#elif defined OLD_TIMER
 		TIMER_MsecSleep(1);
+#endif
 	}
 }
 

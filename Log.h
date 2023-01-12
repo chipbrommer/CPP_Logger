@@ -24,7 +24,7 @@
 #include	<sys/stat.h>
 #include	<unistd.h>
 #endif
-
+//
 #include	<string>                    // Strings
 #include	<fstream>					// File Stream
 #include	<iostream>					// Input Output
@@ -36,9 +36,20 @@
 #include	<stdarg.h>					// Inbound Arguments
 #include	<debugapi.h>				// Debug Message
 //
-//#include	"../Timer/Timer.h"			// Timer
 #include	"timer.h"					// Old non-class timer
 #include	"LogInfo.h"					// Program Info
+//
+// 
+//	Defines:
+//          name                        reason defined
+//          --------------------        ---------------------------------------
+#ifndef     CPP_LOGGER					// Define the cpp logger class. 
+#define     CPP_LOGGER
+#endif
+//
+#if !defined (CPP_TIMER) && !defined (OLD_TIMER)
+#define		NO_TIMER
+#endif
 //
 ///////////////////////////////////////////////////////////////////////////////
 

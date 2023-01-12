@@ -1,0 +1,6 @@
+[      5.083]  - Log - Initialize Complete - Using OLD_TIMER: Start time: 0 	 End Time: 2
+[      5.279]  - Main - Hello World, from Chip 100
+[      9.505]  - Main - Log after sleeping for 1 msecs
+[      9.690]  - Main - Current MSec time: 5
+[      9.792]  - Main - Repeat init test...
+[      9.946]  - Log - Closing.
