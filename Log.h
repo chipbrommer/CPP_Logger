@@ -37,7 +37,6 @@
 #include	<debugapi.h>				// Debug Message
 //
 #include	"timer.h"					// Old non-class timer
-#include	"LogInfo.h"					// Program Info
 //
 // 
 //	Defines:
@@ -51,22 +50,31 @@
 #define		NO_TIMER
 #endif
 //
+//
+// 
+//	Global Constants:
+//          name                        reason defined
+//          --------------------        ---------------------------------------
+static const int MAX_LOG_MESSAGE_LENGTH = 250;		//! Maximum Loggable Message Length
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 // Levels of logging
-enum {
-	LOG_NONE = 0,
-	LOG_ERROR,
-	LOG_WARN,
-	LOG_INFO,
-	LOG_DEBUG
+enum class LOG_LEVEL: const int
+{
+	LOG_NONE	= 0,
+	LOG_ERROR	= 1,
+	LOG_WARN	= 2,
+	LOG_INFO	= 3,
+	LOG_DEBUG	= 4
 };
 
 // Time stamp options
-enum {
+enum class LOG_TIME: const int
+{
 	LOG_TS_NONE,
 	LOG_TS_MSEC,
-	LOG_TS_USEC
+	LOG_TS_USEC,
 };
 
 class Log
@@ -92,11 +100,11 @@ public:
 	int	Initialize(std::string filename, bool enableConsoleLogging = true, bool enableFileLogging = true);
 
 	//! @brief Adds a message into the queue to be logged
-	//! @param level - LOG level of the string.
+	//! @param level - LOG Level of the string.
 	//! @param user - User the message is coming from
 	//! @param format - formatted string to be logged. 
 	//! @return false if failed, true if message was logged
-	bool	AddEntry(int level, std::string user, std::string format, ...);
+	bool	AddEntry(LOG_LEVEL level, std::string user, std::string format, ...);
 
 	//! @brief Writes out the log entries. 
 	void	WriteOut();
@@ -104,12 +112,12 @@ public:
 	//! @brief Sets the maximum logging level.
 	//! @param level - Maximum level to be logged to console and file.
 	//! @return false if failed, true if set
-	bool    SetLogLevel(int level);
+	bool    SetLogLevel(LOG_LEVEL level);
 
 	//! @brief Sets the timestamp logging type
 	//! @param tsLevel - Maximum timestamp level to be logged to console and file.
 	//! @return false if failed, true if set
-	bool    SetLogTimestampLevel(int tsLevel);
+	bool    SetLogTimestampLevel(LOG_TIME tsLevel);
 
 	//! @brief Turn on/off logging to console.
 	//! @param enabled - enable logging to console ?
@@ -129,8 +137,8 @@ private:
 	std::thread* mThread;											//!< Pointer to a thread object
 	std::queue<std::string> mQueue;									//!< Queue to store pending log entries
 	static std::mutex		mMutex;									//!< Mutex for thread protection
-	int						mMaxLogLevel = LOG_DEBUG;				//!< Allowed Maximum Logging Level
-	int						mTimestampLevel = LOG_TS_USEC;			//!< Allowed Maximum Timestamp level
+	LOG_LEVEL				mMaxLogLevel = LOG_LEVEL::LOG_DEBUG;	//!< Default Maximum Logging Level
+	LOG_TIME				mTimestampLevel = LOG_TIME::LOG_TS_USEC;//!< Default Maximum Timestamp level
 	bool					mConsoleOutputEnabled = true;			//!< Output to console enabled ? 
 	bool					mFileOutputEnabled = true;				//!< Output to file enabled ?
 	std::string				mOutputFile = "";						//!< Holds output file location.

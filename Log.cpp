@@ -122,17 +122,17 @@ int Log::Initialize(std::string filename, bool enableConsoleLogging, bool enable
 	mRunning = true;
 
 #ifdef NO_TIMER
-	AddEntry(LOG_INFO, mUser, "Initialize Complete - Using NO_TIMER");
+	AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Initialize Complete - Using NO_TIMER");
 #elif defined CPP_TIMER
-	AddEntry(LOG_INFO, mUser, "Initialize Complete - Using CPP_TIMER: Start time: %d \t End Time: %d", initStart, timer->GetMSecTicks());
+	AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Initialize Complete - Using CPP_TIMER: Start time: %d \t End Time: %d", initStart, timer->GetMSecTicks());
 #elif defined OLD_TIMER
-	AddEntry(LOG_INFO, mUser, "Initialize Complete - Using OLD_TIMER: Start time: %d \t End Time: %d", initStart, TIMER_GetMsecTicks());
+	AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Initialize Complete - Using OLD_TIMER: Start time: %d \t End Time: %d", initStart, TIMER_GetMsecTicks());
 #endif
 
 	return 1;
 }
 
-bool Log::AddEntry(int level, std::string user, std::string format, ...)
+bool Log::AddEntry(LOG_LEVEL level, std::string user, std::string format, ...)
 {
 	va_list args;
 	char msg[MAX_LOG_MESSAGE_LENGTH + 1];
@@ -148,7 +148,7 @@ bool Log::AddEntry(int level, std::string user, std::string format, ...)
 	switch (mTimestampLevel)
 	{
 #if !defined NO_TIMER
-		case LOG_TS_MSEC:
+	case LOG_TIME::LOG_TS_MSEC:
 		{
 		#if defined CPP_TIMER
 			Timer* timer = Timer::GetInstance();
@@ -158,7 +158,7 @@ bool Log::AddEntry(int level, std::string user, std::string format, ...)
 		#endif
 			break;
 		}
-		case LOG_TS_USEC:
+	case LOG_TIME::LOG_TS_USEC:
 		{
 		#if defined CPP_TIMER
 			Timer* timer = Timer::GetInstance();
@@ -255,13 +255,13 @@ void Log::WriteOut()
 	}
 }
 
-bool Log::SetLogLevel(int level)
+bool Log::SetLogLevel(LOG_LEVEL level)
 {
 	mMaxLogLevel = level;
 	return (level == mMaxLogLevel);
 }
 
-bool Log::SetLogTimestampLevel(int tsLevel)
+bool Log::SetLogTimestampLevel(LOG_TIME tsLevel)
 {
 	mTimestampLevel = tsLevel;
 	return (tsLevel == mTimestampLevel);
@@ -282,7 +282,7 @@ bool Log::LogToFile(bool enable)
 Log::~Log()
 {
 	// Notify close and wait for thread to finish writing to file
-	AddEntry(LOG_INFO, mUser, "Closing.");
+	AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Closing.");
 	while (!mQueue.empty()) {}
 
 	mRunning = false;
