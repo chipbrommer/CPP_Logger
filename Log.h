@@ -134,7 +134,7 @@ private:
 	Log();															//!< Hidden Constructor
 	~Log();															//!< Hidden Deconstructor
 	static Log* mInstance;											//!< Instance of Logger
-	std::thread* mThread;											//!< Pointer to a thread object
+	std::thread* mThread = nullptr;											//!< Pointer to a thread object
 	std::queue<std::string> mQueue;									//!< Queue to store pending log entries
 	static std::mutex		mMutex;									//!< Mutex for thread protection
 	LOG_LEVEL				mMaxLogLevel = LOG_LEVEL::LOG_DEBUG;	//!< Default Maximum Logging Level

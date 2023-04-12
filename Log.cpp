@@ -195,7 +195,7 @@ bool Log::AddEntry(LOG_LEVEL level, std::string user, std::string format, ...)
 	if (mConsoleOutputEnabled)
 	{
 #ifdef _WIN32
-		char buf[20000];
+		char buf[400];
 		snprintf(buf, sizeof(buf), "%s - %s - %s\n", ts, user.c_str(), msg);
 		OutputDebugStringA(buf);    // goes to the debug console
 		printf_s("%s", buf);
@@ -208,7 +208,7 @@ bool Log::AddEntry(LOG_LEVEL level, std::string user, std::string format, ...)
 	if (mFileOutputEnabled)
 	{
 		mMutex.lock();
-		char buffer[20000];
+		char buffer[400];
 		snprintf(buffer, sizeof(buffer), "%s - %s - %s", ts, user.c_str(), msg);
 		std::string tmp = buffer;
 		mQueue.push(tmp);
