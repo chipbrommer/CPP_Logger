@@ -33,12 +33,11 @@
 //	Defines:
 //          name                        reason defined
 //          --------------------        ---------------------------------------
-#ifndef		CPP_LOGGER					// If CPP_Logger not included, use normal IO
-#define		USE_STDIO
-#endif
-//
 #ifndef     CPP_TIMER					// Define the cpp timer class. 
 #define     CPP_TIMER
+//
+#ifndef		CPP_LOGGER					// If CPP_Logger not included, use normal IO
+#define		USE_STDIO
 #endif
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -101,3 +100,4 @@ private:
 	std::string		mUser;						//!< System User for Log information location
 };
 
+#endif // CPP_TIMER

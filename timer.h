@@ -34,7 +34,6 @@
 //          --------------------        ---------------------------------------
 #if !defined OLD_TIMER					// Define the timer
 #define OLD_TIMER
-#endif
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -43,3 +42,5 @@ uint32_t TIMER_GetUsecTicks();
 void   TIMER_MsecSleep(uint32_t milliSecs);
 void   TIMER_UsecSleep(uint32_t microSecs);
 void   TIMER_Reset(void);
+
+#endif // OLD_TIMER

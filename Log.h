@@ -70,9 +70,9 @@ enum class LOG_LEVEL: const int
 // Time stamp options
 enum class LOG_TIME: const int
 {
-	LOG_TS_NONE,
-	LOG_TS_MSEC,
-	LOG_TS_USEC,
+	LOG_NONE,
+	LOG_MSEC,
+	LOG_USEC,
 };
 
 class Log
