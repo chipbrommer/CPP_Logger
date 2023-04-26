@@ -134,7 +134,6 @@
   <ItemGroup>
     <ClInclude Include="CPP_Timer\Timer.h" />
     <ClInclude Include="Log.h" />
-    <ClInclude Include="LogInfo.h" />
     <ClInclude Include="timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

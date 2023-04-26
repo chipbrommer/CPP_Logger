@@ -36,11 +36,6 @@
 #include	<stdarg.h>					// Inbound Arguments
 #include	<debugapi.h>				// Debug Message
 //
-#include	"CPP_Timer/Timer.h"
-#include	"LogInfo.h"					// Program Info
-#include	"timer.h"					// Old non-class timer
-//
-// 
 //	Defines:
 //          name                        reason defined
 //          --------------------        ---------------------------------------
@@ -54,6 +49,9 @@
 #else
 #define		NO_TIMER
 #endif
+//
+// 
+constexpr int MAX_LOG_MESSAGE_LENGTH = 250;	//! Maximum Loggable Message Length
 //
 ///////////////////////////////////////////////////////////////////////////////
 
