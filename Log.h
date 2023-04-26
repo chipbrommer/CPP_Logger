@@ -24,7 +24,7 @@
 #include	<sys/stat.h>
 #include	<unistd.h>
 #endif
-
+//
 #include	<string>                    // Strings
 #include	<fstream>					// File Stream
 #include	<iostream>					// Input Output
@@ -38,6 +38,7 @@
 //
 #include	"CPP_Timer/Timer.h"
 #include	"LogInfo.h"					// Program Info
+#include	"timer.h"					// Old non-class timer
 //
 // 
 //	Defines:
@@ -45,30 +46,33 @@
 //          --------------------        ---------------------------------------
 #ifndef     CPP_LOGGER					// Define the cpp logger class. 
 #define     CPP_LOGGER
-#endif
 //
-#ifndef		CPP_TIMER					// If CPP_Timer not included, dont use timer
+#ifdef CPP_TIMER
+#include	"CPP_Timer/Timer.h"
+#elif defined OLD_TIMER
+#include "timer.h"
+#else
 #define		NO_TIMER
 #endif
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 // Levels of logging
-enum class LOG_LEVEL : uint8_t
+enum class LOG_LEVEL: const int
 {
-	LOG_NONE,
-	LOG_ERROR,
-	LOG_WARN,
-	LOG_INFO,
-	LOG_DEBUG
+	LOG_NONE	= 0,
+	LOG_ERROR	= 1,
+	LOG_WARN	= 2,
+	LOG_INFO	= 3,
+	LOG_DEBUG	= 4
 };
 
 // Time stamp options
-enum class LOG_TIME : uint8_t
+enum class LOG_TIME: const int
 {
-	LOG_NONE,
-	LOG_MSEC,
-	LOG_USEC
+	LOG_TS_NONE,
+	LOG_TS_MSEC,
+	LOG_TS_USEC,
 };
 
 class Log
@@ -91,10 +95,11 @@ public:
 	//! @param enableConsoleLogging - true by default, enables or disables console logging. 
 	//! @param enableFileLogging - true by default, enables or disables file logging.
 	//! @return -1 on fail, 0 if already initialized, 1 if successful
-	int	Initialize(std::string filename, bool enableConsoleLogging = true, bool enableFileLogging = true);
+	int		Initialize(std::string filename, bool enableConsoleLogging = true, bool enableFileLogging = true);
 
 	//! @brief Adds a message into the queue to be logged
 	//! @param level - Log level of the string.
+	//! @param level - LOG Level of the string.
 	//! @param user - User the message is coming from
 	//! @param format - formatted string to be logged. 
 	//! @return false if failed, true if message was logged
@@ -146,3 +151,4 @@ private:
 	std::ofstream			mFile;										// File Stream To Write To
 	std::string				mUser;										// System User for Log information location
 };
+#endif
