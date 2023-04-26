@@ -1,5 +1,0 @@
- - Log - Initialize Complete
- - Main - Hello World, from Chip 100
- - Main - Log after sleeping for 1 msecs
- - Main - Repeat init test...
- - Log - Closing.

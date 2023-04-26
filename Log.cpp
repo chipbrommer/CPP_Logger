@@ -53,9 +53,11 @@ int Log::Initialize(std::string filename, bool enableConsoleLogging, bool enable
 
 #ifdef NO_TIMER
 	uint32_t initStart = 0;
-#else
+#elif defined CPP_TIMER
 	Timer* timer = Timer::GetInstance();
 	uint32_t initStart = timer->GetMSecTicks();
+#elif defined OLD_TIMER
+	uint32_t initStart = TIMER_GetMsecTicks();
 #endif
 
 	this->mUser = "Log";
@@ -120,52 +122,57 @@ int Log::Initialize(std::string filename, bool enableConsoleLogging, bool enable
 	mRunning = true;
 
 #ifdef NO_TIMER
-	AddEntry(LOG_INFO, mUser, "Initialize Complete");
-#else
-	AddEntry(LOG_INFO, mUser, "Initialize Complete: Start time: %d \t End Time: %d", initStart, timer->GetMSecTicks());
+	AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Initialize Complete - Using NO_TIMER");
+#elif defined CPP_TIMER
+	AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Initialize Complete - Using CPP_TIMER: Start time: %d \t End Time: %d", initStart, timer->GetMSecTicks());
+#elif defined OLD_TIMER
+	AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Initialize Complete - Using OLD_TIMER: Start time: %d \t End Time: %d", initStart, TIMER_GetMsecTicks());
 #endif
 
 	return 1;
 }
 
-bool Log::AddEntry(int level, std::string user, std::string format, ...)
+bool Log::AddEntry(LOG_LEVEL level, std::string user, std::string format, ...)
 {
 	va_list args;
 	char msg[MAX_LOG_MESSAGE_LENGTH + 1];
 	char ts[20];
 
-	// Return if level of this message exceeds the maximum level.
-	if (level > mMaxLogLevel)
-	{
-		return false;
-	}
-
 	// Format the message timestamp
 	switch (mTimestampLevel)
 	{
-#ifdef CPP_TIMER
-		case LOG_TS_MSEC:
-		{
-			Timer* timer = Timer::GetInstance();
-			snprintf(ts, sizeof(ts), "[%7u] ", (unsigned int)timer->GetMSecTicks());
-			break;
-		}
-		case LOG_TS_USEC:
-		{
-			Timer* timer = Timer::GetInstance();
-			uint32_t t = timer->GetUSecTicks();
-			snprintf(ts, sizeof(ts), "[%7u.%03u] ", t / 1000, t % 1000);
-			break;
-		}
+#if !defined NO_TIMER
+	case LOG_TIME::LOG_MSEC:
+	{
+#if defined CPP_TIMER
+		Timer* timer = Timer::GetInstance();
+		snprintf(ts, sizeof(ts), "[%7u] ", (unsigned int)timer->GetMSecTicks());
+#elif defined OLD_TIMER
+		snprintf(ts, sizeof(ts), "[%7u] ", (unsigned int)TIMER_GetMsecTicks());
 #endif
-		default:
-		{
-	#ifdef _WIN32
-			strcpy_s(ts, sizeof(ts), "");
-	#else
-			strcpy(ts, "");
-	#endif
-		}
+		break;
+	}
+	case LOG_TIME::LOG_USEC:
+	{
+#if defined CPP_TIMER
+		Timer* timer = Timer::GetInstance();
+		uint32_t t = timer->GetUSecTicks();
+		snprintf(ts, sizeof(ts), "[%7u.%03u] ", t / 1000, t % 1000);
+#elif defined OLD_TIMER
+		uint32_t t = TIMER_GetUsecTicks();
+		snprintf(ts, sizeof(ts), "[%7u.%03u] ", t / 1000, t % 1000);
+#endif
+		break;
+	}
+#endif
+	default:
+	{
+#ifdef _WIN32
+		strcpy_s(ts, sizeof(ts), "");
+#else
+		strcpy(ts, "");
+#endif
+	}
 	}
 
 	// Format the message with args
@@ -178,11 +185,11 @@ bool Log::AddEntry(int level, std::string user, std::string format, ...)
 	msg[sizeof(msg) - 1] = '\0';
 	va_end(args);
 
-	// Log to console if enabled
-	if (mConsoleOutputEnabled)
+	// Log to console if enabled and within the max
+	if (mConsoleOutputEnabled && level <= mMaxConsoleLogLevel)
 	{
 #ifdef _WIN32
-		char buf[20000];
+		char buf[400];
 		snprintf(buf, sizeof(buf), "%s - %s - %s\n", ts, user.c_str(), msg);
 		OutputDebugStringA(buf);    // goes to the debug console
 		printf_s("%s", buf);
@@ -191,11 +198,11 @@ bool Log::AddEntry(int level, std::string user, std::string format, ...)
 #endif
 	}
 
-	// Log to file if enabled
-	if (mFileOutputEnabled)
+	// Log to file if enabled and within the max
+	if (mFileOutputEnabled && level <= mMaxFileLogLevel)
 	{
 		mMutex.lock();
-		char buffer[20000];
+		char buffer[400];
 		snprintf(buffer, sizeof(buffer), "%s - %s - %s", ts, user.c_str(), msg);
 		std::string tmp = buffer;
 		mQueue.push(tmp);
@@ -227,28 +234,34 @@ void Log::WriteOut()
 			entry.clear();
 		}
 
-#ifdef NO_TIMER
-
-#ifdef _WIN32
-		Sleep(1);
-#else
-		usleep(1000);
-#endif
-
-#else
-	Timer* timer = Timer::GetInstance();
-	timer->MSecSleep(1);
+#if defined NO_TIMER
+		#ifdef _WIN32
+			Sleep(1);
+		#else
+			usleep(1000);
+		#endif
+#elif defined CPP_TIMER
+		Timer* timer = Timer::GetInstance();
+		timer->MSecSleep(1);
+#elif defined OLD_TIMER
+		TIMER_MsecSleep(1);
 #endif
 	}
 }
 
-bool Log::SetLogLevel(int level)
+bool Log::SetConsoleLogLevel(LOG_LEVEL level)
 {
-	mMaxLogLevel = level;
-	return (level == mMaxLogLevel);
+	mMaxConsoleLogLevel = level;
+	return (level == mMaxConsoleLogLevel);
 }
 
-bool Log::SetLogTimestampLevel(int tsLevel)
+bool Log::SetFileLogLevel(LOG_LEVEL level)
+{
+	mMaxFileLogLevel = level;
+	return (level == mMaxFileLogLevel);
+}
+
+bool Log::SetLogTimestampLevel(LOG_TIME tsLevel)
 {
 	mTimestampLevel = tsLevel;
 	return (tsLevel == mTimestampLevel);
@@ -269,7 +282,7 @@ bool Log::LogToFile(bool enable)
 Log::~Log()
 {
 	// Notify close and wait for thread to finish writing to file
-	AddEntry(LOG_INFO, mUser, "Closing.");
+	AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Closing.");
 	while (!mQueue.empty()) {}
 
 	mRunning = false;

@@ -54,8 +54,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 // Levels of logging
-enum {
-	LOG_NONE = 0,
+enum class LOG_LEVEL : uint8_t
+{
+	LOG_NONE,
 	LOG_ERROR,
 	LOG_WARN,
 	LOG_INFO,
@@ -63,10 +64,11 @@ enum {
 };
 
 // Time stamp options
-enum {
-	LOG_TS_NONE,
-	LOG_TS_MSEC,
-	LOG_TS_USEC
+enum class LOG_TIME : uint8_t
+{
+	LOG_NONE,
+	LOG_MSEC,
+	LOG_USEC
 };
 
 class Log
@@ -92,24 +94,29 @@ public:
 	int	Initialize(std::string filename, bool enableConsoleLogging = true, bool enableFileLogging = true);
 
 	//! @brief Adds a message into the queue to be logged
-	//! @param level - LOG level of the string.
+	//! @param level - Log level of the string.
 	//! @param user - User the message is coming from
 	//! @param format - formatted string to be logged. 
 	//! @return false if failed, true if message was logged
-	bool	AddEntry(int level, std::string user, std::string format, ...);
+	bool	AddEntry(LOG_LEVEL level, std::string user, std::string format, ...);
 
 	//! @brief Writes out the log entries. 
 	void	WriteOut();
 
 	//! @brief Sets the maximum logging level.
-	//! @param level - Maximum level to be logged to console and file.
+	//! @param level - Maximum level to be logged to console.
 	//! @return false if failed, true if set
-	bool    SetLogLevel(int level);
+	bool    SetConsoleLogLevel(LOG_LEVEL level);
+
+	//! @brief Sets the maximum logging level.
+	//! @param level - Maximum level to be logged to file.
+	//! @return false if failed, true if set
+	bool    SetFileLogLevel(LOG_LEVEL level);
 
 	//! @brief Sets the timestamp logging type
-	//! @param tsLevel - Maximum timestamp level to be logged to console and file.
+	//! @param tsLevel - time stamp type to be used in console log.
 	//! @return false if failed, true if set
-	bool    SetLogTimestampLevel(int tsLevel);
+	bool    SetLogTimestampLevel(LOG_TIME tsLevel);
 
 	//! @brief Turn on/off logging to console.
 	//! @param enabled - enable logging to console ?
@@ -123,18 +130,19 @@ public:
 
 protected:
 private:
-	Log();															//!< Hidden Constructor
-	~Log();															//!< Hidden Deconstructor
-	static Log* mInstance;											//!< Instance of Logger
-	std::thread* mThread;											//!< Pointer to a thread object
-	std::queue<std::string> mQueue;									//!< Queue to store pending log entries
-	static std::mutex		mMutex;									//!< Mutex for thread protection
-	int						mMaxLogLevel = LOG_DEBUG;				//!< Allowed Maximum Logging Level
-	int						mTimestampLevel = LOG_TS_USEC;			//!< Allowed Maximum Timestamp level
-	bool					mConsoleOutputEnabled = true;			//!< Output to console enabled ? 
-	bool					mFileOutputEnabled = true;				//!< Output to file enabled ?
-	std::string				mOutputFile = "";						//!< Holds output file location.
-	bool					mRunning = false;						//!< Track if Logger is running
-	std::ofstream			mFile;									//!< File Stream To Write To
-	std::string				mUser;									//!< System User for Log information location
+	Log();																// Hidden Constructor
+	~Log();																// Hidden Deconstructor
+	static Log* mInstance;												// Instance of Logger
+	std::thread* mThread;												// Pointer to a thread object
+	std::queue<std::string> mQueue;										// Queue to store pending log entries
+	static std::mutex		mMutex;										// Mutex for thread protection
+	LOG_LEVEL				mMaxConsoleLogLevel;						// Allowed Maximum Logging Level
+	LOG_LEVEL				mMaxFileLogLevel;							// Allowed Maximum Logging Level
+	LOG_TIME				mTimestampLevel;							// Allowed Maximum Timestamp level
+	bool					mConsoleOutputEnabled;						// Output to console enabled ? 
+	bool					mFileOutputEnabled;							// Output to file enabled ?
+	std::string				mOutputFile;								// Holds output file location.
+	bool					mRunning = false;							// Track if Logger is running
+	std::ofstream			mFile;										// File Stream To Write To
+	std::string				mUser;										// System User for Log information location
 };
