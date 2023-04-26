@@ -36,6 +36,8 @@
 #include	<stdarg.h>					// Inbound Arguments
 #include	<debugapi.h>				// Debug Message
 //
+#include	"CPP_Timer/Timer.h"
+#include	"LogInfo.h"					// Program Info
 #include	"timer.h"					// Old non-class timer
 //
 // 
@@ -44,18 +46,14 @@
 //          --------------------        ---------------------------------------
 #ifndef     CPP_LOGGER					// Define the cpp logger class. 
 #define     CPP_LOGGER
-#endif
 //
-#if !defined (CPP_TIMER) && !defined (OLD_TIMER)
+#ifdef CPP_TIMER
+#include	"CPP_Timer/Timer.h"
+#elif defined OLD_TIMER
+#include "timer.h"
+#else
 #define		NO_TIMER
 #endif
-//
-//
-// 
-//	Global Constants:
-//          name                        reason defined
-//          --------------------        ---------------------------------------
-static const int MAX_LOG_MESSAGE_LENGTH = 250;		//! Maximum Loggable Message Length
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -100,6 +98,7 @@ public:
 	int		Initialize(std::string filename, bool enableConsoleLogging = true, bool enableFileLogging = true);
 
 	//! @brief Adds a message into the queue to be logged
+	//! @param level - Log level of the string.
 	//! @param level - LOG Level of the string.
 	//! @param user - User the message is coming from
 	//! @param format - formatted string to be logged. 
@@ -110,12 +109,17 @@ public:
 	void	WriteOut();
 
 	//! @brief Sets the maximum logging level.
-	//! @param level - Maximum level to be logged to console and file.
+	//! @param level - Maximum level to be logged to console.
 	//! @return false if failed, true if set
-	bool    SetLogLevel(LOG_LEVEL level);
+	bool    SetConsoleLogLevel(LOG_LEVEL level);
+
+	//! @brief Sets the maximum logging level.
+	//! @param level - Maximum level to be logged to file.
+	//! @return false if failed, true if set
+	bool    SetFileLogLevel(LOG_LEVEL level);
 
 	//! @brief Sets the timestamp logging type
-	//! @param tsLevel - Maximum timestamp level to be logged to console and file.
+	//! @param tsLevel - time stamp type to be used in console log.
 	//! @return false if failed, true if set
 	bool    SetLogTimestampLevel(LOG_TIME tsLevel);
 
@@ -131,18 +135,20 @@ public:
 
 protected:
 private:
-	Log();															//!< Hidden Constructor
-	~Log();															//!< Hidden Deconstructor
-	static Log* mInstance;											//!< Instance of Logger
-	std::thread* mThread = nullptr;											//!< Pointer to a thread object
-	std::queue<std::string> mQueue;									//!< Queue to store pending log entries
-	static std::mutex		mMutex;									//!< Mutex for thread protection
-	LOG_LEVEL				mMaxLogLevel = LOG_LEVEL::LOG_DEBUG;	//!< Default Maximum Logging Level
-	LOG_TIME				mTimestampLevel = LOG_TIME::LOG_TS_USEC;//!< Default Maximum Timestamp level
-	bool					mConsoleOutputEnabled = true;			//!< Output to console enabled ? 
-	bool					mFileOutputEnabled = true;				//!< Output to file enabled ?
-	std::string				mOutputFile = "";						//!< Holds output file location.
-	bool					mRunning = false;						//!< Track if Logger is running
-	std::ofstream			mFile;									//!< File Stream To Write To
-	std::string				mUser;									//!< System User for Log information location
+	Log();																// Hidden Constructor
+	~Log();																// Hidden Deconstructor
+	static Log* mInstance;												// Instance of Logger
+	std::thread* mThread;												// Pointer to a thread object
+	std::queue<std::string> mQueue;										// Queue to store pending log entries
+	static std::mutex		mMutex;										// Mutex for thread protection
+	LOG_LEVEL				mMaxConsoleLogLevel;						// Allowed Maximum Logging Level
+	LOG_LEVEL				mMaxFileLogLevel;							// Allowed Maximum Logging Level
+	LOG_TIME				mTimestampLevel;							// Allowed Maximum Timestamp level
+	bool					mConsoleOutputEnabled;						// Output to console enabled ? 
+	bool					mFileOutputEnabled;							// Output to file enabled ?
+	std::string				mOutputFile;								// Holds output file location.
+	bool					mRunning = false;							// Track if Logger is running
+	std::ofstream			mFile;										// File Stream To Write To
+	std::string				mUser;										// System User for Log information location
 };
+#endif
