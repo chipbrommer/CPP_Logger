@@ -21,7 +21,6 @@ int main()
     log->AddEntry(Essentials::LOG_LEVEL::LOG_DEBUG, mUser, "Debug Test");
     log->AddEntry(Essentials::LOG_LEVEL::LOG_ERROR, mUser, "Error Test");
     log->AddEntry(Essentials::LOG_LEVEL::LOG_INFO, mUser, "Log after sleeping for %d msecs", 1);
-    log->AddEntry(Essentials::LOG_LEVEL::LOG_INFO, mUser, "Repeat init test...");
     log->ReleaseInstance();
 
     return 0;

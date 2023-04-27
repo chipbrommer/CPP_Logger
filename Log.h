@@ -35,7 +35,8 @@
 #include	<cstring>					// C-Strings
 #include	<stdarg.h>					// Inbound Arguments
 #include	<debugapi.h>				// Debug Message
-#include	"CPP_Timer/Timer.h"
+#include	<map>						// Mapping enum to strings
+#include	"CPP_Timer/Timer.h"			// Timer class
 //
 //	Defines:
 //          name                        reason defined
@@ -58,11 +59,11 @@ namespace Essentials
 	// Levels of logging
 	enum class LOG_LEVEL : const int
 	{
-		LOG_NONE = 0,
-		LOG_ERROR = 1,
-		LOG_WARN = 2,
-		LOG_INFO = 3,
-		LOG_DEBUG = 4
+		LOG_NONE,
+		LOG_ERROR,
+		LOG_WARN,
+		LOG_INFO,
+		LOG_DEBUG,
 	};
 
 	// Time stamp options
@@ -71,6 +72,24 @@ namespace Essentials
 		LOG_NONE,
 		LOG_MSEC,
 		LOG_USEC,
+	};
+
+	// A Map to convert an logging level value to a readable string.
+	static std::map<LOG_LEVEL, std::string> LevelMap
+	{
+		{LOG_LEVEL::LOG_NONE,	"NONE"},
+		{LOG_LEVEL::LOG_ERROR,	"ERROR"},
+		{LOG_LEVEL::LOG_WARN,	"WARN"},
+		{LOG_LEVEL::LOG_INFO,	"INFO"},
+		{LOG_LEVEL::LOG_DEBUG,	"DEBUG"},
+	};
+
+	// A Map to convert an error value to a readable string.
+	static std::map<LOG_TIME, std::string> TimeMap
+	{
+		{LOG_TIME::LOG_NONE,	"NONE"},
+		{LOG_TIME::LOG_MSEC,	"MSEC"},
+		{LOG_TIME::LOG_USEC,	"USEC"},
 	};
 
 	class Log

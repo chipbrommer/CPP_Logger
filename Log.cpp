@@ -53,6 +53,14 @@ namespace Essentials
 			return 0;
 		}
 
+		this->mUser = "Log";
+		this->mOutputFile = filename;
+		this->mConsoleOutputEnabled = enableConsoleLogging;
+		this->mFileOutputEnabled = enableFileLogging;
+		this->mMaxConsoleLogLevel = LOG_LEVEL::LOG_DEBUG;
+		this->mMaxFileLogLevel = LOG_LEVEL::LOG_DEBUG;
+		this->mTimestampLevel = LOG_TIME::LOG_MSEC;
+
 #ifdef NO_TIMER
 		uint32_t initStart = 0;
 #elif defined CPP_TIMER
@@ -61,14 +69,6 @@ namespace Essentials
 #elif defined OLD_TIMER
 		uint32_t initStart = TIMER_GetMsecTicks();
 #endif
-
-		this->mUser = "Log";
-		this->mOutputFile = filename;
-		this->mConsoleOutputEnabled = enableConsoleLogging;
-		this->mFileOutputEnabled = enableFileLogging;
-		this->mMaxConsoleLogLevel = LOG_LEVEL::LOG_DEBUG;
-		this->mMaxFileLogLevel = LOG_LEVEL::LOG_DEBUG;
-		this->mTimestampLevel = LOG_TIME::LOG_MSEC;
 
 		size_t i = filename.rfind('/', filename.length());
 		if (i == std::string::npos)
@@ -127,12 +127,16 @@ namespace Essentials
 		mRunning = true;
 
 #ifdef NO_TIMER
-		AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Initialize Complete - Using NO_TIMER");
+		AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Initialize Complete - Using NO_TIMER.");
+		AddEntry(LOG_LEVEL::LOG_INFO, mUser, "File Log Level: %s - Console Log Level: %s", );
 #elif defined CPP_TIMER
-		AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Initialize Complete - Using CPP_TIMER: Start time: %d \t End Time: %d", initStart, timer->GetMSecTicks());
+		AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Initialize Complete - Using CPP_TIMER.");
 #elif defined OLD_TIMER
-		AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Initialize Complete - Using OLD_TIMER: Start time: %d \t End Time: %d", initStart, TIMER_GetMsecTicks());
+		AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Initialize Complete - Using OLD_TIMER.);
 #endif
+		AddEntry(LOG_LEVEL::LOG_INFO, mUser, "File Log Level:    %s",	LevelMap[mMaxFileLogLevel].c_str());
+		AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Console Log Level: %s",	LevelMap[mMaxConsoleLogLevel].c_str());
+		AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Time Type:         %s",	TimeMap[mTimestampLevel].c_str());
 
 		return 1;
 	}

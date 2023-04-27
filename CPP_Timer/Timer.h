@@ -28,6 +28,7 @@
 #include <stdint.h>						// Standard integer types
 #include <string>						// Strings
 #include <thread>						// Threading
+#include "../Log.h"						// Logging
 //
 // 
 //	Defines:
@@ -89,16 +90,16 @@ namespace Essentials
 		void			Fatal(std::string msg);
 
 		//!< VARIABLES
-		bool			mInitialzied = false;		//!< Track if initialized
-		bool			mClosing = false;			//!< Track if closing.
-		uint32_t		mTickOffset;				//!< Timer offset from start up timer
-		bool			mTimerThreadReady;			//!< Thread flag
-		uint64_t		mUSecStartTime;				//!< System start time in usec
-		volatile uint32_t	mTickCount;				//!< Tick count
-		double			mTimerFactor;				//!< Timer factor
-		static Timer* mInstance;					//!< Instance of Logger
-		std::thread* mThread;					//!< Pointer to a thread object
-		std::string		mUser;						//!< System User for Log information location
+		bool			mInitialzied;				// Track if initialized
+		bool			mClosing;					// Track if closing.
+		uint32_t		mTickOffset;				// Timer offset from start up timer
+		bool			mTimerThreadReady;			// Thread flag
+		uint64_t		mUSecStartTime;				// System start time in usec
+		volatile uint32_t	mTickCount;				// Tick count
+		double			mTimerFactor;				// Timer factor
+		static Timer*	mInstance;					// Instance of Logger
+		std::thread*	mThread;					// Pointer to a thread object
+		std::string		mUser;						// System User for Log information location 
 	};
 }
 #endif // CPP_TIMER

@@ -78,8 +78,8 @@ namespace Essentials
 #ifdef USE_STDIO
 					printf("System time went backwards %d msec\n", -elapsed);
 #else
-					Log* log = Log::GetInstance();
-					log->AddEntry(LOG_WARN, mUser, "System time went backwards %d msec", -elapsed);
+					Log* mLog = Log::GetInstance();
+					mLog->AddEntry(LOG_WARN, mUser, "System time went backwards %d msec", -elapsed);
 #endif // USE_STDIO
 				}
 			}
@@ -134,7 +134,19 @@ namespace Essentials
 #endif
 	}
 
-	Timer::Timer() {}
+	Timer::Timer() 
+	{
+		mInitialzied = false;
+		mClosing = false;
+		mTickOffset = 0;
+		mTimerThreadReady = false;
+		mUSecStartTime = 0;
+		mTickCount = 0;
+		mTimerFactor = 0;
+		mInstance = NULL;
+		mThread = nullptr;
+		mUser = "";
+	}
 
 	Timer::~Timer()
 	{
@@ -142,7 +154,8 @@ namespace Essentials
 #ifdef USE_STDIO
 		printf_s("Timer Closing.\n");
 #else
-		AddEntry(LOG_INFO, mUser, "Closing.");
+		Log* mLog = Log::GetInstance();
+		mLog->AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Closing.");
 #endif // USE_STDIO
 
 		mInitialzied = false;
@@ -153,16 +166,16 @@ namespace Essentials
 
 	void Timer::Initialize()
 	{
-		this->mUser = "Timer";
-
 		if (mInitialzied)
 		{
 			return;
 		}
 
+		this->mUser = "Timer";
+
 #ifdef _WIN32
-		LARGE_INTEGER hrInfo;
-		LARGE_INTEGER curCount;
+		LARGE_INTEGER hrInfo = { 0 };
+		LARGE_INTEGER curCount = { 0 };
 
 		// Set up high-res pollable timer.
 		if (!QueryPerformanceFrequency(&hrInfo) || !QueryPerformanceCounter(&curCount))
@@ -172,11 +185,9 @@ namespace Essentials
 
 		mTimerFactor = 1000000.0 / hrInfo.QuadPart;
 		mUSecStartTime = (uint64_t)curCount.QuadPart;
-
 #else
 
 #endif
-
 		mThread = new std::thread(&Timer::HandleTrueMSec, this);
 
 		// Wait for timer thread to become ready
@@ -190,8 +201,8 @@ namespace Essentials
 #ifdef USE_STDIO
 		printf("Timer Initialization complete\n");
 #else
-		Log* log = Log::GetInstance();
-		log->AddEntry(LOG_INFO, mUser, "Initialization complete.");
+		Log* mLog = Log::GetInstance();
+		mLog->AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Initialization complete.");
 #endif // USE_STDIO
 	}
 
@@ -246,8 +257,8 @@ namespace Essentials
 #ifdef USE_STDIO
 		fprintf_s(stderr, "%s\n", msg.c_str());
 #else
-		Log* log = Log::GetInstance();
-		log->AddEntry(LOG_ERROR, mUser, "Fatal Error: %s", msg.c_str());
+		Log* mLog = Log::GetInstance();
+		mLog->AddEntry(LOG_LEVEL::LOG_ERROR, mUser, "Fatal Error: %s", msg.c_str());
 #endif
 		exit(1);
 	}
