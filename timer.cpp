@@ -200,11 +200,11 @@ static void Initialize(void)
 #ifdef _WIN32
 
 	// Set up high-res pollable timer.
-	if (!QueryPerformanceFrequency(&hrInfo)
-		|| !QueryPerformanceCounter(&curCount))
+	if (!QueryPerformanceFrequency(&hrInfo) || !QueryPerformanceCounter(&curCount))
 	{
 		Fatal("high resolution timer not available");
 	}
+
 	timerFactor = 1000000.0 / hrInfo.QuadPart;
 	usecStartTime = (uint64_t)curCount.QuadPart;
 

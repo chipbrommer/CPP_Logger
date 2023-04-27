@@ -190,6 +190,24 @@ namespace Essentials
 #endif
 		mThread = new std::thread(&Timer::HandleTrueMSec, this);
 
+		// Verify thread initialization
+		if (mThread == NULL)
+		{
+			Fatal("Failed to start timer thread!");
+		}
+
+		// Set thread to time critical
+		if (!SetThreadPriority(mThread->native_handle(), THREAD_PRIORITY_TIME_CRITICAL))
+		{
+			Fatal("Failed to set timer thread priority");
+		}
+
+		// Resume the thread
+		if (ResumeThread(mThread->native_handle()) == -1)
+		{
+			Fatal("Failed to resume timer thread");
+		}
+
 		// Wait for timer thread to become ready
 		while (!mTimerThreadReady)
 		{
