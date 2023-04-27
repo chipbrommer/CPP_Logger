@@ -3,24 +3,25 @@
 
 #include <iostream>
 #include "Log.h"
+#include "CPP_Timer/Timer.h"
 
 int main()
 {
     std::string mUser = "Main";
-    Log* log = log->GetInstance();
+    Essentials::Log* log = log->GetInstance();
 
     int init = log->Initialize("./OutputFiles/output");
 
-    log->SetConsoleLogLevel(LOG_LEVEL::LOG_ERROR);
-    log->SetFileLogLevel(LOG_LEVEL::LOG_INFO);
-    log->SetLogTimestampLevel(LOG_TIME::LOG_MSEC);
+    log->SetConsoleLogLevel(Essentials::LOG_LEVEL::LOG_ERROR);
+    log->SetFileLogLevel(Essentials::LOG_LEVEL::LOG_INFO);
+    log->SetLogTimestampLevel(Essentials::LOG_TIME::LOG_MSEC);
 
     log->LogToFile(true);
-    log->AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Hello World, from %s %d", "Chip", 100);
-    log->AddEntry(LOG_LEVEL::LOG_DEBUG, mUser, "Debug Test");
-    log->AddEntry(LOG_LEVEL::LOG_ERROR, mUser, "Error Test");
-    log->AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Log after sleeping for %d msecs", 1);
-    log->AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Repeat init test...");
+    log->AddEntry(Essentials::LOG_LEVEL::LOG_INFO, mUser, "Hello World, from %s %d", "Chip", 100);
+    log->AddEntry(Essentials::LOG_LEVEL::LOG_DEBUG, mUser, "Debug Test");
+    log->AddEntry(Essentials::LOG_LEVEL::LOG_ERROR, mUser, "Error Test");
+    log->AddEntry(Essentials::LOG_LEVEL::LOG_INFO, mUser, "Log after sleeping for %d msecs", 1);
+    log->AddEntry(Essentials::LOG_LEVEL::LOG_INFO, mUser, "Repeat init test...");
     log->ReleaseInstance();
 
     return 0;
