@@ -133,8 +133,12 @@ public:
 
 protected:
 private:
-	Log();																// Hidden Constructor
-	~Log();																// Hidden Deconstructor
+	//! @brief Hidden Constructor
+	Log();		
+
+	//! @brief Hidden Deconstructor
+	~Log();																
+	
 	static Log* mInstance;												// Instance of Logger
 	std::thread* mThread;												// Pointer to a thread object
 	std::queue<std::string> mQueue;										// Queue to store pending log entries
@@ -145,7 +149,7 @@ private:
 	bool					mConsoleOutputEnabled;						// Output to console enabled ? 
 	bool					mFileOutputEnabled;							// Output to file enabled ?
 	std::string				mOutputFile;								// Holds output file location.
-	bool					mRunning = false;							// Track if Logger is running
+	bool					mRunning;									// Track if Logger is running
 	std::ofstream			mFile;										// File Stream To Write To
 	std::string				mUser;										// System User for Log information location
 };

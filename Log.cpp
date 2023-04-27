@@ -64,6 +64,9 @@ int Log::Initialize(std::string filename, bool enableConsoleLogging, bool enable
 	this->mOutputFile = filename;
 	this->mConsoleOutputEnabled = enableConsoleLogging;
 	this->mFileOutputEnabled = enableFileLogging;
+	this->mMaxConsoleLogLevel = LOG_LEVEL::LOG_DEBUG;
+	this->mMaxFileLogLevel = LOG_LEVEL::LOG_DEBUG;
+	this->mTimestampLevel = LOG_TIME::LOG_MSEC;
 
 	size_t i = filename.rfind('/', filename.length());
 	if (i == std::string::npos)
@@ -281,7 +284,7 @@ bool Log::LogToFile(bool enable)
 
 Log::~Log()
 {
-	// Notify close and wait for thread to finish writing to file
+	// Notify close and wait for queue to finish writing to file
 	AddEntry(LOG_LEVEL::LOG_INFO, mUser, "Closing.");
 	while (!mQueue.empty()) {}
 
@@ -291,4 +294,15 @@ Log::~Log()
 	mFile.close();
 }
 
-Log::Log(){}
+Log::Log()
+{
+	mThread = nullptr;
+	mMaxConsoleLogLevel = LOG_LEVEL::LOG_NONE;
+	mMaxFileLogLevel = LOG_LEVEL::LOG_NONE;
+	mTimestampLevel = LOG_TIME::LOG_NONE;
+	mConsoleOutputEnabled = false;
+	mFileOutputEnabled = false;
+	mOutputFile = "";
+	mRunning = false;
+	mUser = "";
+}
